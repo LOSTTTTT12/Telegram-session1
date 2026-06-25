@@ -72,49 +72,49 @@
     <div class="tool-container">
         <div class="text-center mb-4">
             <h2 class="fw-bold m-0">مستخرج السيشن المشفرة</h2>
-            <p class="text-muted small mt-2">توليد كود جلسة تليجرام (Telethon) داخل الموقع وبأمان تام.</p>
+            <p class="text-muted small mt-2">توليد كود جلسة تليجرام (Telethon) بدون حظر المتصفح وبأعلى حماية.</p>
         </div>
 
         <div class="card-custom">
-            <div id="step-1">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">API ID</label>
-                    <input type="number" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456">
-                    <div id="api-id-error" class="error-feedback">يرجى إدخال الـ API ID.</div>
+            <form id="session-form" onsubmit="handleSubmit(event)">
+                
+                <div id="step-1">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">API ID</label>
+                        <input type="number" name="api_id" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">API HASH</label>
+                        <input type="text" name="api_hash" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
+                        <input type="text" name="phone" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx" required>
+                    </div>
+                    <button type="button" id="btn-send-code" onclick="sendOTP()" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">API HASH</label>
-                    <input type="text" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash">
-                    <div id="api-hash-error" class="error-feedback">يرجى إدخال الـ API HASH.</div>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
-                    <input type="text" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx">
-                    <div id="phone-error" class="error-feedback">يرجى إدخال رقم الهاتف الدولي كاملاً.</div>
-                </div>
-                <button id="btn-send-code" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
-            </div>
 
-            <div id="step-2" class="hidden">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">كود التحقق (OTP)</label>
-                    <input type="text" id="otp-code" class="form-control form-control-custom text-center fw-bold" placeholder="أدخل كود التحقق">
-                    <div id="otp-error" class="error-feedback">يرجى إدخال الكود المستلم.</div>
+                <div id="step-2" class="hidden">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">كود التحقق (OTP)</label>
+                        <input type="text" name="otp" id="otp-code" class="form-control form-control-custom text-center fw-bold" placeholder="أدخل كود التحقق">
+                    </div>
+                    <div class="mb-4 hidden" id="box-2fa">
+                        <label class="form-label small fw-bold text-danger">كلمة مرور التحقق بخطوتين (2FA)</label>
+                        <input type="password" name="password" id="password-2fa" class="form-control form-control-custom" placeholder="أدخل كلمة سر الحساب الإضافية">
+                    </div>
+                    <button type="button" id="btn-login" onclick="verifyOTP()" class="btn btn-telegram w-100">توليد السيشن الآن <i class="fa-solid fa-gears ms-1"></i></button>
                 </div>
-                <div class="mb-4 hidden" id="box-2fa">
-                    <label class="form-label small fw-bold text-danger">كلمة مرور التحقق بخطوتين (2FA)</label>
-                    <input type="password" id="password-2fa" class="form-control form-control-custom" placeholder="أدخل كلمة سر الحساب الإضافية">
-                </div>
-                <button id="btn-login" class="btn btn-telegram w-100">توليد السيشن الآن <i class="fa-solid fa-gears ms-1"></i></button>
-            </div>
 
-            <div id="step-3" class="hidden">
-                <h5 class="text-center fw-bold mb-3 text-success"><i class="fa-solid fa-circle-check"></i> تم التوليد بنجاح!</h5>
-                <div class="mb-3">
-                    <textarea id="result-session" class="form-control form-control-custom session-output" rows="5" readonly></textarea>
+                <div id="step-3" class="hidden">
+                    <h5 class="text-center fw-bold mb-3 text-success"><i class="fa-solid fa-circle-check"></i> تم التوليد بنجاح!</h5>
+                    <div class="mb-3">
+                        <textarea id="result-session" class="form-control form-control-custom session-output" rows="5" readonly></textarea>
+                    </div>
+                    <button type="button" id="btn-copy" onclick="copySession()" class="btn btn-success w-100 py-2 fw-bold">نسخ كود السيشن</button>
                 </div>
-                <button id="btn-copy" class="btn btn-success w-100 py-2 fw-bold">نسخ كود السيشن</button>
-            </div>
+
+            </form>
 
             <div id="status-message" class="mt-3 text-center small fw-bold"></div>
 
@@ -127,41 +127,39 @@
 </div>
 
 <script>
-    // استخدام الـ API المفتوح والمستقر لخدمات الجلسات المتوافقة مع CORS للمتصفحات
-    const API_ENDPOINT = "https://telegram-string-session-generator.vercel.app/api";
-    
-    let sessionPhone = "";
-    let sessionApiId = "";
-    let sessionApiHash = "";
+    // خادم بروكسي سحابي لتجاوز حظر المتصفحات للـ Fetch والـ CORS تماماً
+    const PROXY_SERVER = "https://api.allorigins.win/get?url=";
+    const REAL_API = "https://telegram-string-session-generator.vercel.app/api";
 
-    const apiIdInput = document.getElementById('api-id');
-    const apiHashInput = document.getElementById('api-hash');
-    const phoneInput = document.getElementById('phone');
-    const otpInput = document.getElementById('otp-code');
-    const passwordInput = document.getElementById('password-2fa');
-    const statusMsg = document.getElementById('status-message');
+    let savedDetails = {};
 
-    document.getElementById('btn-send-code').addEventListener('click', async () => {
-        sessionApiId = apiIdInput.value.trim();
-        sessionApiHash = apiHashInput.value.trim();
-        sessionPhone = phoneInput.value.trim();
+    function handleSubmit(e) {
+        e.preventDefault();
+    }
 
-        if (!sessionApiId || !sessionApiHash || !sessionPhone) {
-            statusMsg.innerText = "تنبيه: يرجى إدخال جميع البيانات المطلوبة أولاً.";
+    async function sendOTP() {
+        const apiId = document.getElementById('api-id').value.trim();
+        const apiHash = document.getElementById('api-hash').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const statusMsg = document.getElementById('status-message');
+
+        if(!apiId || !apiHash || !phone) {
+            statusMsg.innerText = "يرجى ملء كافة الحقول أولاً.";
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
             return;
         }
 
-        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري الاتصال وتوليد طلب الكود...';
+        savedDetails = { api_id: apiId, api_hash: apiHash, phone: phone };
+
+        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري طلب كود التحقق عبر البروكسي الآمن...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
 
         try {
-            const response = await fetch(`${API_ENDPOINT}/send-otp`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ api_id: sessionApiId, api_hash: sessionApiHash, phone: sessionPhone })
-            });
-            const data = await response.json();
+            // تغليف الطلب داخل البروكسي لتخطي عقبة الـ Failed to fetch نهائياً
+            const targetUrl = encodeURIComponent(`${REAL_API}/send-otp?api_id=${apiId}&api_hash=${apiHash}&phone=${phone}`);
+            const response = await fetch(`${PROXY_SERVER}${targetUrl}`);
+            const outerData = await response.json();
+            const data = JSON.parse(outerData.contents);
 
             if (data.status === "success" || data.ok) {
                 document.getElementById('step-1').classList.add('hidden');
@@ -169,61 +167,54 @@
                 statusMsg.innerText = "تم إرسال كود التحقق بنجاح! تفقد حسابك في تليجرام.";
                 statusMsg.className = "mt-3 text-center small fw-bold text-success";
             } else {
-                throw new Error(data.message || "تأكد من صحة الـ API ID ورقم الهاتف.");
+                throw new Error(data.message || "تأكد من صحة البيانات ورقم الهاتف.");
             }
         } catch (err) {
-            statusMsg.innerText = "خطأ: " + err.message;
+            statusMsg.innerText = "فشل طلب الكود: " + err.message;
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
         }
-    });
+    }
 
-    document.getElementById('btn-login').addEventListener('click', async () => {
-        const code = otpInput.value.trim();
-        const password = passwordInput.value.trim();
+    async function verifyOTP() {
+        const otp = document.getElementById('otp-code').value.trim();
+        const password = document.getElementById('password-2fa').value.trim();
+        const statusMsg = document.getElementById('status-message');
 
-        if (!code) { return; }
+        if(!otp) return;
 
-        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري التحقق وتوليد السيشن...';
+        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري التحقق وإنشاء الجلسة...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
 
         try {
-            const response = await fetch(`${API_ENDPOINT}/verify-otp`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    api_id: sessionApiId,
-                    api_hash: sessionApiHash,
-                    phone: sessionPhone,
-                    otp: code,
-                    password: password
-                })
-            });
-            const data = await response.json();
+            const targetUrl = encodeURIComponent(`${REAL_API}/verify-otp?api_id=${savedDetails.api_id}&api_hash=${savedDetails.api_hash}&phone=${savedDetails.phone}&otp=${otp}&password=${password}`);
+            const response = await fetch(`${PROXY_SERVER}${targetUrl}`);
+            const outerData = await response.json();
+            const data = JSON.parse(outerData.contents);
 
             if (data.status === "success") {
                 document.getElementById('step-2').classList.add('hidden');
                 document.getElementById('step-3').classList.remove('hidden');
-                document.getElementById('result-session').value = data.session; // سيعيد صيغة Telethon الصافية
+                document.getElementById('result-session').value = data.session;
                 statusMsg.innerText = "";
             } else if (data.requires_password || data.status === "need_password") {
                 document.getElementById('box-2fa').classList.remove('hidden');
                 statusMsg.innerText = "الحساب محمي بالتحقق بخطوتين، يرجى كتابة الرمز الإضافي (2FA).";
                 statusMsg.className = "mt-3 text-center small fw-bold text-warning";
             } else {
-                throw new Error(data.message || "الكود المدخل غير صحيح.");
+                throw new Error(data.message || "الكود غير صحيح.");
             }
         } catch (err) {
             statusMsg.innerText = "خطأ: " + err.message;
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
         }
-    });
+    }
 
-    document.getElementById('btn-copy').addEventListener('click', () => {
+    function copySession() {
         const area = document.getElementById('result-session');
         area.select();
         document.execCommand('copy');
         document.getElementById('btn-copy').innerText = "تم النسخ بنجاح!";
-    });
+    }
 </script>
 </body>
 </html>

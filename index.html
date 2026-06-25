@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مستخرج سيشن تليجرام - المبرمج @rvrr4</title>
-    <!-- استدعاء Bootstrap 5 لواجهة عصرية -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- مكتبة أيقونات FontAwesome لمحاكاة الأيقونات -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- استدعاء مكتبة GramJS الرسمية للمتصفح -->
     <script src="https://cdn.jsdelivr.net/npm/telegram@2.22.2/browser/Telegram.js"></script>
     
     <style>
@@ -67,6 +64,18 @@
             border-color: var(--accent-color);
             box-shadow: none;
             outline: none;
+        }
+
+        /* تنسيق الخانات التي تحتوي على أخطاء */
+        .is-invalid-custom {
+            border-color: #dc3545 !important;
+        }
+
+        .error-feedback {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
         }
 
         .btn-telegram {
@@ -142,7 +151,6 @@
 <div class="container px-4">
     <div class="tool-container">
         
-        <!-- الهيدر العلوي للأداة -->
         <div class="text-center mb-4">
             <span class="badge-platform mb-2"><i class="fa-brands fa-python me-1"></i> Telethon #StringSession</span>
             <h2 class="fw-bold m-0">مستخرج السيشن المشفرة</h2>
@@ -151,7 +159,6 @@
 
         <div class="card-custom">
             
-            <!-- الخطوة الأولى -->
             <div id="step-1">
                 <div class="step-icon"><i class="fa-solid fa-key"></i></div>
                 <h5 class="text-center fw-bold mb-4">الخطوة 1: بيانات المطور ورقم الهاتف</h5>
@@ -159,22 +166,24 @@
                 <div class="mb-3">
                     <label class="form-label small fw-bold">API ID</label>
                     <input type="number" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456">
+                    <div id="api-id-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال الـ API ID الخاص بك.</div>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label small fw-bold">API HASH</label>
                     <input type="text" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash المكون من 32 رمزاً">
+                    <div id="api-hash-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال الـ API HASH الخاص بك.</div>
                 </div>
                 
                 <div class="mb-4">
                     <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
                     <input type="text" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx">
+                    <div id="phone-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال رقم الهاتف كاملاً مع رمز الدولة.</div>
                 </div>
                 
                 <button id="btn-send-code" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
             </div>
 
-            <!-- الخطوة الثانية -->
             <div id="step-2" class="hidden">
                 <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <h5 class="text-center fw-bold mb-4">الخطوة 2: تأكيد الهوية</h5>
@@ -182,18 +191,19 @@
                 <div class="mb-3">
                     <label class="form-label small fw-bold">كود التحقق (OTP)</label>
                     <input type="text" id="otp-code" class="form-control form-control-custom text-center fw-bold" placeholder="أدخل الكود الواصل لحسابك">
+                    <div id="otp-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى إدخال رمز التحقق المستلم.</div>
                     <div class="form-text small text-muted text-center mt-2">تفقد رسائل حساب تليجرام الخاص بك للحصول على الكود.</div>
                 </div>
                 
                 <div class="mb-4 hidden" id="box-2fa">
                     <label class="form-label small fw-bold text-danger">كلمة مرور التحقق بخطوتين (2FA)</label>
                     <input type="password" id="password-2fa" class="form-control form-control-custom" placeholder="أدخل كلمة سر الحساب">
+                    <div id="password-2fa-error" class="error-feedback"><i class="fa-solid fa-circle-exclamation me-1"></i> يرجى كتابة كلمة مرور التحقق بخطوتين لحسابك.</div>
                 </div>
                 
                 <button id="btn-login" class="btn btn-telegram w-100">توليد السيشن الآن <i class="fa-solid fa-gears ms-1"></i></button>
             </div>
 
-            <!-- الخطوة الثالثة والأخيرة -->
             <div id="step-3" class="hidden">
                 <div class="step-icon" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;"><i class="fa-solid fa-circle-check"></i></div>
                 <h5 class="text-center fw-bold mb-1">تم التوليد بنجاح!</h5>
@@ -209,10 +219,8 @@
                 </div>
             </div>
 
-            <!-- رسائل الحالة -->
             <div id="status-message" class="mt-3 text-center small fw-bold"></div>
 
-            <!-- توثيق حقوقك الشخصية كمطور للأداة -->
             <div class="rights">
                 <hr class="my-4" style="border-color: var(--border-color);">
                 الأداة مطورة بواسطة المبرمج: <a href="https://t.me/rvrr4" target="_blank">@rvrr4</a><br>
@@ -228,6 +236,7 @@
     let client = null;
     let phoneCodeHash = null;
 
+    // عناصر المدخلات
     const apiIdInput = document.getElementById('api-id');
     const apiHashInput = document.getElementById('api-hash');
     const phoneInput = document.getElementById('phone');
@@ -235,7 +244,14 @@
     const passwordInput = document.getElementById('password-2fa');
     const statusMsg = document.getElementById('status-message');
 
-    // تشفير السيشن الخاص بـ Telethon داخل الجافا سكريبت
+    // عناصر رسائل الخطأ الفرعية للحقول
+    const apiIdError = document.getElementById('api-id-error');
+    const apiHashError = document.getElementById('api-hash-error');
+    const phoneError = document.getElementById('phone-error');
+    const otpError = document.getElementById('otp-error');
+    const password2faError = document.getElementById('password-2fa-error');
+
+    // دالة محاكاة تشفير السيشن الخاص بـ Telethon داخل الجافا سكريبت
     function convertToTelethonSession(clientInstance) {
         const dcId = clientInstance.session.dcId;
         const authKey = clientInstance.session.authKey.key;
@@ -259,14 +275,43 @@
         return "1" + btoa(String.fromCharCode.apply(null, buffer));
     }
 
-    // إرسال كود التحقق
+    // زر إرسال كود التحقق (الخطوة 1) مع ميزة التحقق الصارمة من الحقول
     document.getElementById('btn-send-code').addEventListener('click', async () => {
         const apiId = parseInt(apiIdInput.value);
-        const apiHash = apiHashInput.value;
+        const apiHash = apiHashInput.value.trim();
         const phoneNumber = phoneInput.value.trim();
+        
+        let isValid = true;
 
-        if (!apiId || !apiHash || !phoneNumber) {
-            statusMsg.innerText = "يرجى ملء كافة الخانات المطلوبة قبل الإرسال.";
+        // إعادة ضبط الأخطاء السابقة أولاً
+        apiIdInput.classList.remove('is-invalid-custom');
+        apiIdError.style.display = 'none';
+        apiHashInput.classList.remove('is-invalid-custom');
+        apiHashError.style.display = 'none';
+        phoneInput.classList.remove('is-invalid-custom');
+        phoneError.style.display = 'none';
+        statusMsg.innerText = "";
+
+        // التحقق من ملء كل حقل على حدة وإظهار تنبيه خاص به إن كان فارغاً
+        if (!apiId) {
+            apiIdInput.classList.add('is-invalid-custom');
+            apiIdError.style.display = 'block';
+            isValid = false;
+        }
+        if (!apiHash) {
+            apiHashInput.classList.add('is-invalid-custom');
+            apiHashError.style.display = 'block';
+            isValid = false;
+        }
+        if (!phoneNumber) {
+            phoneInput.classList.add('is-invalid-custom');
+            phoneError.style.display = 'block';
+            isValid = false;
+        }
+
+        // إذا وُجد حقل واحد على الأقل فارغاً، يتم إيقاف الكود وإخبار المستخدم
+        if (!isValid) {
+            statusMsg.innerText = "يرجى ملء كافة الخانات المطلوبة باللون الأحمر قبل إرسال الكود.";
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
             return;
         }
@@ -292,16 +337,24 @@
         }
     });
 
-    // معالجة كود التحقق وتوليد السيشن
+    // معالجة كود التحقق وتوليد السيشن (الخطوة 2)
     document.getElementById('btn-login').addEventListener('click', async () => {
         const apiId = parseInt(apiIdInput.value);
-        const apiHash = apiHashInput.value;
+        const apiHash = apiHashInput.value.trim();
         const phoneNumber = phoneInput.value.trim();
         const code = otpInput.value.trim();
         const password = passwordInput.value;
 
+        // إعادة ضبط الأخطاء للخطوة الثانية
+        otpInput.classList.remove('is-invalid-custom');
+        otpError.style.display = 'none';
+        passwordInput.classList.remove('is-invalid-custom');
+        password2faError.style.display = 'none';
+
         if (!code) {
-            statusMsg.innerText = "يرجى إدخال رمز التحقق (OTP).";
+            otpInput.classList.add('is-invalid-custom');
+            otpError.style.display = 'block';
+            statusMsg.innerText = "يرجى إدخال رمز التحقق (OTP) المستلم أولاً.";
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
             return;
         }
@@ -320,7 +373,9 @@
                 if (err.message.includes("SESSION_PASSWORD_NEEDED")) {
                     document.getElementById('box-2fa').classList.remove('hidden');
                     if (!password) {
-                        throw new Error("الحساب محمي بالتحقق بخطوتين. يرجى كتابة كلمة السر الإضافية.");
+                        passwordInput.classList.add('is-invalid-custom');
+                        password2faError.style.display = 'block';
+                        throw new Error("الحساب محمي بالتحقق بخطوتين. يرجى كتابة كلمة السر الإضافية بالأسفل.");
                     }
                     const passwordInfo = await client.invoke(new Api.account.GetPassword());
                     await client.signInUserWithPassword({ apiId, apiHash }, phoneNumber, password, passwordInfo);

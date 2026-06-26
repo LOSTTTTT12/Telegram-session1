@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
+    <script src="https://cdn.jsdelivr.net/npm/gramjs@2.22.2/browser/Telegram.js"></script>
+    
     <style>
         :root {
             --bg-color: #0f172a;
@@ -43,8 +45,6 @@
             box-shadow: none;
             color: var(--text-color);
         }
-        .is-invalid-custom { border-color: #dc3545 !important; }
-        .error-feedback { color: #dc3545; font-size: 0.8rem; margin-top: 5px; display: none; }
         .btn-telegram {
             background-color: #0088cc;
             color: white;
@@ -71,50 +71,46 @@
 <div class="container px-4">
     <div class="tool-container">
         <div class="text-center mb-4">
-            <h2 class="fw-bold m-0">مستخرج السيشن المشفرة</h2>
-            <p class="text-muted small mt-2">توليد كود جلسة تليجرام (Telethon) بدون حظر المتصفح وبأعلى حماية.</p>
+            <h2 class="fw-bold m-0">مستخرج الجلسات المحلي</h2>
+            <p class="text-muted small mt-2">توليد كود السيشن داخل المتصفح مباشرة 100% دون أي سيرفر خارجي.</p>
         </div>
 
         <div class="card-custom">
-            <form id="session-form" onsubmit="handleSubmit(event)">
-                
-                <div id="step-1">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">API ID</label>
-                        <input type="number" name="api_id" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">API HASH</label>
-                        <input type="text" name="api_hash" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
-                        <input type="text" name="phone" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx" required>
-                    </div>
-                    <button type="button" id="btn-send-code" onclick="sendOTP()" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
+            <div id="step-1">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">API ID</label>
+                    <input type="number" id="api-id" class="form-control form-control-custom" placeholder="مثال: 123456">
                 </div>
-
-                <div id="step-2" class="hidden">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">كود التحقق (OTP)</label>
-                        <input type="text" name="otp" id="otp-code" class="form-control form-control-custom text-center fw-bold" placeholder="أدخل كود التحقق">
-                    </div>
-                    <div class="mb-4 hidden" id="box-2fa">
-                        <label class="form-label small fw-bold text-danger">كلمة مرور التحقق بخطوتين (2FA)</label>
-                        <input type="password" name="password" id="password-2fa" class="form-control form-control-custom" placeholder="أدخل كلمة سر الحساب الإضافية">
-                    </div>
-                    <button type="button" id="btn-login" onclick="verifyOTP()" class="btn btn-telegram w-100">توليد السيشن الآن <i class="fa-solid fa-gears ms-1"></i></button>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">API HASH</label>
+                    <input type="text" id="api-hash" class="form-control form-control-custom" placeholder="أدخل الـ Hash">
                 </div>
-
-                <div id="step-3" class="hidden">
-                    <h5 class="text-center fw-bold mb-3 text-success"><i class="fa-solid fa-circle-check"></i> تم التوليد بنجاح!</h5>
-                    <div class="mb-3">
-                        <textarea id="result-session" class="form-control form-control-custom session-output" rows="5" readonly></textarea>
-                    </div>
-                    <button type="button" id="btn-copy" onclick="copySession()" class="btn btn-success w-100 py-2 fw-bold">نسخ كود السيشن</button>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">رقم الهاتف الدولي</label>
+                    <input type="text" id="phone" class="form-control form-control-custom text-start" dir="ltr" placeholder="+9665xxxxxxxx">
                 </div>
+                <button id="btn-send-code" onclick="startConnection()" class="btn btn-telegram w-100">إرسال كود التحقق <i class="fa-solid fa-paper-plane ms-1"></i></button>
+            </div>
 
-            </form>
+            <div id="step-2" class="hidden">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">كود التحقق (OTP)</label>
+                    <input type="text" id="otp-code" class="form-control form-control-custom text-center fw-bold" placeholder="أدخل الكود المستلم">
+                </div>
+                <div class="mb-4 hidden" id="box-2fa">
+                    <label class="form-label small fw-bold text-danger">كلمة مرور التحقق بخطوتين (2FA)</label>
+                    <input type="password" id="password-2fa" class="form-control form-control-custom" placeholder="أدخل كلمة سر الحساب الإضافية">
+                </div>
+                <button id="btn-login" onclick="submitOTP()" class="btn btn-telegram w-100">توليد السيشن الآن <i class="fa-solid fa-gears ms-1"></i></button>
+            </div>
+
+            <div id="step-3" class="hidden">
+                <h5 class="text-center fw-bold mb-3 text-success"><i class="fa-solid fa-circle-check"></i> تم التوليد بنجاح!</h5>
+                <div class="mb-3">
+                    <textarea id="result-session" class="form-control form-control-custom session-output" rows="5" readonly></textarea>
+                </div>
+                <button id="btn-copy" onclick="copySession()" class="btn btn-success w-100 py-2 fw-bold">نسخ كود السيشن</button>
+            </div>
 
             <div id="status-message" class="mt-3 text-center small fw-bold"></div>
 
@@ -127,82 +123,121 @@
 </div>
 
 <script>
-    // خادم بروكسي سحابي لتجاوز حظر المتصفحات للـ Fetch والـ CORS تماماً
-    const PROXY_SERVER = "https://api.allorigins.win/get?url=";
-    const REAL_API = "https://telegram-string-session-generator.vercel.app/api";
+    let client = null;
+    let phoneCodeHash = null;
 
-    let savedDetails = {};
+    // دالة مبتكرة لتوليد صيغة السيشن الخاصة بـ Telethon متوافقة محلياً من المتصفح
+    function convertToTelethonSession(clientInstance) {
+        const dcId = clientInstance.session.dcId;
+        const authKey = clientInstance.session.authKey.key;
+        const serverAddress = clientInstance.session.serverAddress;
+        const port = clientInstance.session.port;
 
-    function handleSubmit(e) {
-        e.preventDefault();
+        const ipBytes = new TextEncoder().encode(serverAddress);
+        const buffer = new Uint8Array(1 + ipBytes.length + 2 + authKey.length);
+        
+        let offset = 0;
+        buffer[offset++] = dcId;
+        buffer.set(ipBytes, offset);
+        offset += ipBytes.length;
+        
+        const view = new DataView(buffer.buffer);
+        view.setUint16(offset, port, false);
+        offset += 2;
+        
+        buffer.set(authKey, offset);
+        
+        // التشفير النهائي الثنائي الأساسي لـ Telethon
+        let binary = '';
+        for (let i = 0; i < buffer.byteLength; i++) { binary += String.fromCharCode(buffer[i]); }
+        return "1" + window.btoa(binary);
     }
 
-    async function sendOTP() {
-        const apiId = document.getElementById('api-id').value.trim();
+    async function startConnection() {
+        const apiId = parseInt(document.getElementById('api-id').value);
         const apiHash = document.getElementById('api-hash').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const statusMsg = document.getElementById('status-message');
 
-        if(!apiId || !apiHash || !phone) {
-            statusMsg.innerText = "يرجى ملء كافة الحقول أولاً.";
+        if (!apiId || !apiHash || !phone) {
+            statusMsg.innerText = "تنبيه: يرجى كتابة البيانات كاملة أولاً.";
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
             return;
         }
 
-        savedDetails = { api_id: apiId, api_hash: apiHash, phone: phone };
-
-        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري طلب كود التحقق عبر البروكسي الآمن...';
+        statusMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> جاري فتح اتصال Websocket مشفر ومباشر مع تليجرام...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
 
         try {
-            // تغليف الطلب داخل البروكسي لتخطي عقبة الـ Failed to fetch نهائياً
-            const targetUrl = encodeURIComponent(`${REAL_API}/send-otp?api_id=${apiId}&api_hash=${apiHash}&phone=${phone}`);
-            const response = await fetch(`${PROXY_SERVER}${targetUrl}`);
-            const outerData = await response.json();
-            const data = JSON.parse(outerData.contents);
+            // حل مشكلة الـ undefined: جلب الكائن من النطاق المترجم الصافي
+            const gramjs = window.gramjs;
+            const stringSession = new gramjs.sessions.StringSession("");
+            
+            client = new gramjs.TelegramClient(stringSession, apiId, apiHash, {
+                connectionRetries: 5,
+                useWSS: true // تجاوز جدار حماية المتصفح عبر فرض اتصالات الويب الصافية
+            });
 
-            if (data.status === "success" || data.ok) {
-                document.getElementById('step-1').classList.add('hidden');
-                document.getElementById('step-2').classList.remove('hidden');
-                statusMsg.innerText = "تم إرسال كود التحقق بنجاح! تفقد حسابك في تليجرام.";
-                statusMsg.className = "mt-3 text-center small fw-bold text-success";
-            } else {
-                throw new Error(data.message || "تأكد من صحة البيانات ورقم الهاتف.");
-            }
+            await client.connect();
+            
+            const res = await client.sendCode({ apiId, apiHash }, phone);
+            phoneCodeHash = res.phoneCodeHash;
+
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+            statusMsg.innerText = "تم إرسال كود التحقق لحسابك في تليجرام!";
+            statusMsg.className = "mt-3 text-center small fw-bold text-success";
         } catch (err) {
-            statusMsg.innerText = "فشل طلب الكود: " + err.message;
+            statusMsg.innerText = "فشل في الاتصال المباشر: " + err.message;
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
         }
     }
 
-    async function verifyOTP() {
-        const otp = document.getElementById('otp-code').value.trim();
+    async function submitOTP() {
+        const code = document.getElementById('otp-code').value.trim();
         const password = document.getElementById('password-2fa').value.trim();
+        const phone = document.getElementById('phone').value.trim();
         const statusMsg = document.getElementById('status-message');
 
-        if(!otp) return;
+        if (!code) return;
 
-        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري التحقق وإنشاء الجلسة...';
+        statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> جاري تأكيد الرمز محلياً...';
         statusMsg.className = "mt-3 text-center small fw-bold text-info";
 
         try {
-            const targetUrl = encodeURIComponent(`${REAL_API}/verify-otp?api_id=${savedDetails.api_id}&api_hash=${savedDetails.api_hash}&phone=${savedDetails.phone}&otp=${otp}&password=${password}`);
-            const response = await fetch(`${PROXY_SERVER}${targetUrl}`);
-            const outerData = await response.json();
-            const data = JSON.parse(outerData.contents);
+            const gramjs = window.gramjs;
+            
+            await client.invoke(
+                new gramjs.Api.auth.SignIn({
+                    phoneNumber: phone,
+                    phoneCodeHash: phoneCodeHash,
+                    phoneCode: code
+                })
+            ).catch(async (err) => {
+                // التعامل الذكي مع حماية الخطوتين (2FA)
+                if (err.message.includes("SESSION_PASSWORD_NEEDED")) {
+                    document.getElementById('box-2fa').classList.remove('hidden');
+                    if (!password) {
+                        throw new Error("الحساب محمي بالتحقق بخطوتين، يرجى إدخال كلمة المرور بالأسفل.");
+                    }
+                    const pwdInfo = await client.invoke(new gramjs.Api.account.GetPassword());
+                    await client.signInUserWithPassword({ 
+                        apiId: parseInt(document.getElementById('api-id').value), 
+                        apiHash: document.getElementById('api-hash').value.trim() 
+                    }, phone, password, pwdInfo);
+                } else {
+                    throw err;
+                }
+            });
 
-            if (data.status === "success") {
-                document.getElementById('step-2').classList.add('hidden');
-                document.getElementById('step-3').classList.remove('hidden');
-                document.getElementById('result-session').value = data.session;
-                statusMsg.innerText = "";
-            } else if (data.requires_password || data.status === "need_password") {
-                document.getElementById('box-2fa').classList.remove('hidden');
-                statusMsg.innerText = "الحساب محمي بالتحقق بخطوتين، يرجى كتابة الرمز الإضافي (2FA).";
-                statusMsg.className = "mt-3 text-center small fw-bold text-warning";
-            } else {
-                throw new Error(data.message || "الكود غير صحيح.");
-            }
+            // نجاح العملية وتوليد النص
+            const telethonStringSession = convertToTelethonSession(client);
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+            document.getElementById('result-session').value = telethonStringSession;
+            statusMsg.innerText = "";
+            await client.disconnect();
+
         } catch (err) {
             statusMsg.innerText = "خطأ: " + err.message;
             statusMsg.className = "mt-3 text-center small fw-bold text-danger";
